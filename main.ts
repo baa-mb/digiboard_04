@@ -1,5 +1,6 @@
 function licht_servo () {
     pins.servoWritePin(AnalogPin.P8, Math.map(input.lightLevel(), 0, 255, 0, 180))
+    serial.writeValue("x", Math.map(input.lightLevel(), 0, 255, 0, 180))
 }
 input.onButtonPressed(Button.A, function () {
     lauf = true
@@ -21,12 +22,12 @@ function init () {
     pins.setAudioPinEnabled(true)
     gast = 0
     temp_zeit = -15000
+    basic.clearScreen()
 }
 input.onButtonPressed(Button.B, function () {
     lauf = false
 })
 function besucher () {
-    basic.showNumber(pins.digitalReadPin(DigitalPin.P15))
     if (pins.digitalReadPin(DigitalPin.P15) == 1) {
         gast = 1
         music.play(music.tonePlayable(262, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
@@ -44,7 +45,7 @@ function temperatur () {
     true
     )
     if (dht11_dht22.readDataSuccessful()) {
-        if (control.millis() - temp_zeit > 15000) {
+        if (control.millis() - temp_zeit > 10000) {
             I2C_LCD1602.BacklightOn()
             I2C_LCD1602.ShowNumber(dht11_dht22.readData(dataType.humidity), 12, 0)
             I2C_LCD1602.ShowNumber(dht11_dht22.readData(dataType.temperature), 12, 1)
@@ -69,6 +70,7 @@ function motoren () {
                 pins.analogWritePin(AnalogPin.P13, 300)
                 basic.pause(5000)
             }
+            basic.pause(2000)
         }
     } else {
         if (motor) {
@@ -77,7 +79,6 @@ function motoren () {
             motor = false
         }
     }
-    basic.pause(2000)
 }
 let motor = false
 let temp_zeit = 0
@@ -86,7 +87,9 @@ let strip: neopixel.Strip = null
 let lauf = false
 basic.showIcon(IconNames.Yes)
 init()
+serial.redirectToUSB()
 basic.forever(function () {
     besucher()
     temperatur()
+    licht_servo()
 })
