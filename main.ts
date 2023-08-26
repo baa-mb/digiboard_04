@@ -3,10 +3,10 @@ function licht_servo () {
     strip.showColor(neopixel.colors(NeoPixelColors.Black))
     if (licht == 0) {
         strip.showColor(neopixel.colors(NeoPixelColors.Red))
-        solar_start_winkle = get_winkel(solar_start_winkle)
+        solar_start_winkle = get_winkel([solar_start_winkle,1])
         pins.servoWritePin(AnalogPin.P9, solar_start_winkle)
     }
-    licht = get_winkel(licht)
+    licht = get_winkel([licht,0])
 }
 input.onButtonPressed(Button.A, function () {
     motor_start = true
@@ -30,14 +30,18 @@ function init () {
     basic.clearScreen()
     init_variable()
 }
-function get_winkel (num: number) {
-    let flag = 0
+function get_winkel (arr:Array) {
+    let flag = arr[1]
+    let num =arr[0]
     num = (num + add_winkel[flag]) % (180 + add_winkel[flag])
     return num
 }
 input.onButtonPressed(Button.B, function () {
     motor_start = false
 })
+function testfunktion (list: any[]) {
+	
+}
 function besucher () {
     // music.play(music.tonePlayable(262, music.beat(BeatFraction.Whole)), music.PlaybackMode.InBackground)
     if (pins.digitalReadPin(DigitalPin.P15) == 1) {
