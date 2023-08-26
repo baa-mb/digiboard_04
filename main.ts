@@ -3,13 +3,13 @@ function licht_servo () {
     strip.showColor(neopixel.colors(NeoPixelColors.Black))
     if (licht == 0) {
         strip.showColor(neopixel.colors(NeoPixelColors.Red))
-        solar_winkel = get_winkel(solar_winkel,1)
-        pins.servoWritePin(AnalogPin.P9, solar_winkel)
+        solar_start_winkle = get_winkel(solar_start_winkle)
+        pins.servoWritePin(AnalogPin.P9, solar_start_winkle)
     }
-    licht = get_winkel(licht,0)
+    licht = get_winkel(licht)
 }
 input.onButtonPressed(Button.A, function () {
-    lauf = true
+    motor_start = true
 })
 function init () {
     pins.digitalWritePin(DigitalPin.P1, 0)
@@ -19,7 +19,7 @@ function init () {
     strip.setBrightness(100)
     strip.clear()
     strip.show()
-    lauf = false
+    motor_start = false
     I2C_LCD1602.LcdInit(39)
     I2C_LCD1602.BacklightOff()
     I2C_LCD1602.ShowString("Klima-LF %:", 0, 0)
@@ -30,24 +30,18 @@ function init () {
     basic.clearScreen()
     init_variable()
 }
-function init_variable() {
-    licht = 0
-    gast = 0
-    temp_zeit = -15000
-    temp_interval = 15000
-    solar_winkel = 90
-}
-function get_winkel (num: number,flag=0) {
-    num = (num + + add_winkel[flag]) % (180 + add_winkel[flag])
+function get_winkel (num: number) {
+    let flag = 0
+    num = (num + add_winkel[flag]) % (180 + add_winkel[flag])
     return num
 }
 input.onButtonPressed(Button.B, function () {
-    lauf = false
+    motor_start = false
 })
 function besucher () {
+    // music.play(music.tonePlayable(262, music.beat(BeatFraction.Whole)), music.PlaybackMode.InBackground)
     if (pins.digitalReadPin(DigitalPin.P15) == 1) {
         gast = 1
-        music.play(music.tonePlayable(262, music.beat(BeatFraction.Whole)), music.PlaybackMode.InBackground)
     } else {
         gast = 0
     }
@@ -72,17 +66,24 @@ function temperatur () {
         }
     }
 }
-
+function init_variable () {
+    add_winkel = [45, 5]
+    licht = 0
+    gast = 0
+    temp_zeit = -15000
+    temp_interval = 15000
+    solar_start_winkle = 90
+}
 function motoren () {
-    if (lauf) {
+    if (motor_start) {
         motor = true
         pins.analogWritePin(AnalogPin.P12, 200)
         pins.analogWritePin(AnalogPin.P13, 0)
-        if (lauf) {
+        if (motor_start) {
             basic.pause(5000)
             pins.digitalWritePin(DigitalPin.P12, 0)
             pins.digitalWritePin(DigitalPin.P13, 0)
-            if (lauf) {
+            if (motor_start) {
                 basic.pause(1000)
                 pins.analogWritePin(AnalogPin.P12, 0)
                 pins.analogWritePin(AnalogPin.P13, 300)
@@ -95,7 +96,7 @@ function motoren () {
             pins.digitalWritePin(DigitalPin.P12, 0)
             pins.digitalWritePin(DigitalPin.P13, 0)
             motor = false
-            lauf = false
+            motor_start = false
         }
     }
 }
@@ -103,16 +104,15 @@ let motor = false
 let temp_interval = 0
 let temp_zeit = 0
 let gast = 0
+let add_winkel: number[] = []
 let num = 0
-let lauf = false
-let solar_winkel = 0
+let motor_start = false
+let solar_start_winkle = 0
 let strip: neopixel.Strip = null
 let licht = 0
-
-let add_winkel = [45,5]
 basic.showIcon(IconNames.Yes)
 init()
-serial.redirectToUSB()
+// serial.redirectToUSB()
 basic.forever(function () {
     besucher()
     temperatur()
