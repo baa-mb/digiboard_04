@@ -1,26 +1,13 @@
-function init_variable() {
-    licht=0
-    gast = 0
-    temp_zeit = -15000
-    temp_interval = 15000
-    solar_winkel = 90
-}
-
 function licht_servo () {
-   
     pins.servoWritePin(AnalogPin.P8, licht)
+    strip.showColor(neopixel.colors(NeoPixelColors.Black))
     if (licht == 0) {
+        strip.showColor(neopixel.colors(NeoPixelColors.Red))
         solar_winkel = get_winkel(solar_winkel)
         pins.servoWritePin(AnalogPin.P9, solar_winkel)
     }
     licht = get_winkel(licht)
 }
-
-function get_winkel(num: number) {
-    num = (num + add_winkel) % 180
-    return num
-}
-
 input.onButtonPressed(Button.A, function () {
     lauf = true
 })
@@ -43,7 +30,17 @@ function init () {
     basic.clearScreen()
     init_variable()
 }
-
+function init_variable() {
+    licht = 0
+    gast = 0
+    temp_zeit = -15000
+    temp_interval = 15000
+    solar_winkel = 90
+}
+function get_winkel (num: number) {
+    num = (num + add_winkel) % (180 + add_winkel)
+    return num
+}
 input.onButtonPressed(Button.B, function () {
     lauf = false
 })
@@ -93,11 +90,12 @@ function motoren () {
             }
             basic.pause(2000)
         }
-    } else {
+        // } else {
         if (motor) {
             pins.digitalWritePin(DigitalPin.P12, 0)
             pins.digitalWritePin(DigitalPin.P13, 0)
             motor = false
+            lauf = false
         }
     }
 }
@@ -106,11 +104,12 @@ let temp_interval = 0
 let temp_zeit = 0
 let gast = 0
 let num = 0
-let strip: neopixel.Strip = null
 let lauf = false
 let solar_winkel = 0
+let strip: neopixel.Strip = null
 let licht = 0
-let add_winkel = 45
+let add_winkel = 0
+add_winkel = 45
 basic.showIcon(IconNames.Yes)
 init()
 serial.redirectToUSB()
