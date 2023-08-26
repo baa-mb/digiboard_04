@@ -3,10 +3,10 @@ function licht_servo () {
     strip.showColor(neopixel.colors(NeoPixelColors.Black))
     if (licht == 0) {
         strip.showColor(neopixel.colors(NeoPixelColors.Red))
-        solar_winkel = get_winkel(solar_winkel)
+        solar_winkel = get_winkel(solar_winkel,1)
         pins.servoWritePin(AnalogPin.P9, solar_winkel)
     }
-    licht = get_winkel(licht)
+    licht = get_winkel(licht,0)
 }
 input.onButtonPressed(Button.A, function () {
     lauf = true
@@ -37,8 +37,8 @@ function init_variable() {
     temp_interval = 15000
     solar_winkel = 90
 }
-function get_winkel (num: number) {
-    num = (num + add_winkel) % (180 + add_winkel)
+function get_winkel (num: number,flag=0) {
+    num = (num + + add_winkel[flag]) % (180 + add_winkel[flag])
     return num
 }
 input.onButtonPressed(Button.B, function () {
@@ -108,8 +108,8 @@ let lauf = false
 let solar_winkel = 0
 let strip: neopixel.Strip = null
 let licht = 0
-let add_winkel = 0
-add_winkel = 45
+
+let add_winkel = [45,5]
 basic.showIcon(IconNames.Yes)
 init()
 serial.redirectToUSB()
