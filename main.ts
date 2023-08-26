@@ -6,23 +6,28 @@ input.onButtonPressed(Button.B, function () {
 })
 let motor = false
 let lauf = false
-basic.showIcon(IconNames.Yes)
+pins.digitalWritePin(DigitalPin.P1, 0)
 let strip = neopixel.create(DigitalPin.P14, 4, NeoPixelMode.RGB)
+strip.setBrightness(255)
 lauf = false
-I2C_LCD1602.LcdInit(0)
+I2C_LCD1602.LcdInit(39)
 I2C_LCD1602.ShowString("Klima", 0, 0)
 basic.forever(function () {
     pins.servoWritePin(AnalogPin.P8, Math.map(input.lightLevel(), 0, 255, 0, 180))
-    if (input.lightLevel() < 5) {
+    if (input.lightLevel() < 50) {
         strip.showColor(neopixel.colors(NeoPixelColors.Red))
         pins.analogWritePin(AnalogPin.P16, 635)
     } else {
-        strip.showColor(neopixel.colors(NeoPixelColors.Green))
+        if (input.lightLevel() < 150) {
+            strip.showColor(neopixel.colors(NeoPixelColors.Orange))
+        } else {
+            strip.showColor(neopixel.colors(NeoPixelColors.Green))
+        }
         pins.analogWritePin(AnalogPin.P16, 0)
     }
     if (lauf) {
         motor = true
-        pins.analogWritePin(AnalogPin.P12, 100)
+        pins.analogWritePin(AnalogPin.P12, 200)
         pins.analogWritePin(AnalogPin.P13, 0)
         if (lauf) {
             basic.pause(5000)
@@ -31,7 +36,7 @@ basic.forever(function () {
             if (lauf) {
                 basic.pause(1000)
                 pins.analogWritePin(AnalogPin.P12, 0)
-                pins.analogWritePin(AnalogPin.P13, 248)
+                pins.analogWritePin(AnalogPin.P13, 300)
                 basic.pause(5000)
             }
         }
