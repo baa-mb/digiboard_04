@@ -3,10 +3,10 @@ function licht_servo () {
     strip.showColor(neopixel.colors(NeoPixelColors.Black))
     if (licht == 0) {
         strip.showColor(neopixel.colors(NeoPixelColors.Red))
-        solar_start_winkle = get_winkel([solar_start_winkle,1])
-        pins.servoWritePin(AnalogPin.P9, solar_start_winkle)
+        solar_winkel = get_winkel([solar_winkel, 1])
+        pins.servoWritePin(AnalogPin.P9, solar_winkel)
     }
-    licht = get_winkel([licht,0])
+    licht = get_winkel([licht, 0])
 }
 input.onButtonPressed(Button.A, function () {
     motor_start = true
@@ -30,18 +30,15 @@ function init () {
     basic.clearScreen()
     init_variable()
 }
-function get_winkel (arr:Array) {
-    let flag = arr[1]
-    let num =arr[0]
+function get_winkel (arr: number[]) {
+    flag = arr[1]
+    num = arr[0]
     num = (num + add_winkel[flag]) % (180 + add_winkel[flag])
     return num
 }
 input.onButtonPressed(Button.B, function () {
     motor_start = false
 })
-function testfunktion (list: any[]) {
-	
-}
 function besucher () {
     // music.play(music.tonePlayable(262, music.beat(BeatFraction.Whole)), music.PlaybackMode.InBackground)
     if (pins.digitalReadPin(DigitalPin.P15) == 1) {
@@ -76,7 +73,7 @@ function init_variable () {
     gast = 0
     temp_zeit = -15000
     temp_interval = 15000
-    solar_start_winkle = 90
+    solar_winkel = 90
 }
 function motoren () {
     if (motor_start) {
@@ -110,10 +107,12 @@ let temp_zeit = 0
 let gast = 0
 let add_winkel: number[] = []
 let num = 0
+let flag = 0
 let motor_start = false
-let solar_start_winkle = 0
+let solar_winkel = 0
 let strip: neopixel.Strip = null
 let licht = 0
+let num2 = 0
 basic.showIcon(IconNames.Yes)
 init()
 // serial.redirectToUSB()
