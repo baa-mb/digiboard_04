@@ -12,7 +12,7 @@ input.onButtonPressed(Button.A, function () {
     motor_start = true
 })
 function init () {
-    pins.digitalWritePin(DigitalPin.P1, 0)
+    // pins.digitalWritePin(DigitalPin.P1, 0)
     pins.digitalWritePin(DigitalPin.P14, 0)
     pins.digitalWritePin(DigitalPin.P16, 0)
     strip = neopixel.create(DigitalPin.P14, 4, NeoPixelMode.RGB)
@@ -24,8 +24,8 @@ function init () {
     I2C_LCD1602.BacklightOff()
     I2C_LCD1602.ShowString("Klima-LF %:", 0, 0)
     I2C_LCD1602.ShowString("Temperatur:", 0, 1)
-    pins.setAudioPin(AnalogPin.P1)
-    pins.setAudioPinEnabled(true)
+    // pins.setAudioPin(AnalogPin.P1)
+    pins.setAudioPinEnabled(false)
     pins.servoWritePin(AnalogPin.P9, 90)
     basic.clearScreen()
     init_variable()
@@ -68,7 +68,7 @@ function temperatur () {
     }
 }
 function init_variable () {
-    add_winkel = [45, 5]
+    add_winkel = [45, 10]
     licht = 0
     gast = 0
     temp_zeit = -15000
@@ -101,6 +101,11 @@ function motoren () {
         }
     }
 }
+function motorstart () {
+    if (pins.analogReadPin(AnalogPin.P1) > 300) {
+        motor_start = true
+    }
+}
 let motor = false
 let temp_interval = 0
 let temp_zeit = 0
@@ -121,4 +126,6 @@ basic.forever(function () {
     temperatur()
     licht_servo()
     motoren()
+    // basic.showNumber(pins.analogReadPin(AnalogPin.P1))
+    I2C_LCD1602.ShowNumber(pins.analogReadPin(AnalogPin.P1), 0, 0)
 })
