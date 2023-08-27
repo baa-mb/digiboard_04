@@ -1,4 +1,4 @@
-function licht_servo () {
+function licht_servo() {
     pins.servoWritePin(AnalogPin.P8, licht)
     strip.showColor(neopixel.colors(NeoPixelColors.Black))
     if (licht == 0) {
@@ -11,7 +11,7 @@ function licht_servo () {
 input.onButtonPressed(Button.A, function () {
     motor_start = true
 })
-function init () {
+function init() {
     // pins.digitalWritePin(DigitalPin.P1, 0)
     pins.digitalWritePin(DigitalPin.P14, 0)
     pins.digitalWritePin(DigitalPin.P16, 0)
@@ -30,7 +30,7 @@ function init () {
     basic.clearScreen()
     init_variable()
 }
-function get_winkel (arr: number[]) {
+function get_winkel(arr: number[]) {
     flag = arr[1]
     num = arr[0]
     num = (num + add_winkel[flag]) % (180 + add_winkel[flag])
@@ -39,7 +39,7 @@ function get_winkel (arr: number[]) {
 input.onButtonPressed(Button.B, function () {
     motor_start = false
 })
-function besucher () {
+function besucher() {
     // music.play(music.tonePlayable(262, music.beat(BeatFraction.Whole)), music.PlaybackMode.InBackground)
     if (pins.digitalReadPin(DigitalPin.P15) == 1) {
         gast = 1
@@ -48,13 +48,13 @@ function besucher () {
     }
     pins.digitalWritePin(DigitalPin.P16, gast)
 }
-function temperatur () {
+function temperatur() {
     dht11_dht22.queryData(
-    DHTtype.DHT11,
-    DigitalPin.P2,
-    true,
-    false,
-    true
+        DHTtype.DHT11,
+        DigitalPin.P2,
+        true,
+        false,
+        true
     )
     if (dht11_dht22.readDataSuccessful()) {
         if (control.millis() - temp_zeit > temp_interval) {
@@ -67,7 +67,7 @@ function temperatur () {
         }
     }
 }
-function init_variable () {
+function init_variable() {
     add_winkel = [45, 10]
     licht = 0
     gast = 0
@@ -75,7 +75,7 @@ function init_variable () {
     temp_interval = 15000
     solar_winkel = 90
 }
-function motoren () {
+function motoren() {
     if (motor_start) {
         motor = true
         pins.analogWritePin(AnalogPin.P12, 200)
@@ -101,8 +101,8 @@ function motoren () {
         }
     }
 }
-function motorstart () {
-    if (pins.analogReadPin(AnalogPin.P1) > 300) {
+function motorstart() {
+    if (pins.analogReadPin(AnalogPin.P0) > 300) {
         motor_start = true
     }
 }
@@ -121,10 +121,13 @@ let num2 = 0
 basic.showIcon(IconNames.Yes)
 init()
 // serial.redirectToUSB()
+
+
 basic.forever(function () {
-    serial.writeValue("x", pins.analogReadPin(AnalogPin.P1))
-    // besucher()
-    // temperatur()
-    // licht_servo()
-    // motoren()
+    serial.writeValue("x", pins.analogReadPin(AnalogPin.P0))
+    besucher()
+    temperatur()
+    licht_servo()
+    motorstart()
+    motoren()
 })
