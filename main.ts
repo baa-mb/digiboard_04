@@ -57,10 +57,12 @@ function temperatur() {
         true
     )
     if (dht11_dht22.readDataSuccessful()) {
-        if (control.millis() - temp_zeit > temp_interval) {
+        // if (control.millis() - temp_zeit > temp_interval || dht11_dht22.readData(dataType.temperature) != old_temp) {
+        if (Math.round(dht11_dht22.readData(dataType.humidity)) != old_humidity) {
             I2C_LCD1602.BacklightOn()
             I2C_LCD1602.ShowNumber(dht11_dht22.readData(dataType.humidity), 12, 0)
             I2C_LCD1602.ShowNumber(dht11_dht22.readData(dataType.temperature), 12, 1)
+            old_humidity = Math.round(dht11_dht22.readData(dataType.humidity))
             basic.pause(4000)
             I2C_LCD1602.BacklightOff()
             temp_zeit = control.millis()
@@ -80,19 +82,21 @@ function motoren() {
         motor = true
         pins.analogWritePin(AnalogPin.P12, 200)
         pins.analogWritePin(AnalogPin.P13, 0)
-        if (motor_start) {
-            basic.pause(5000)
-            pins.digitalWritePin(DigitalPin.P12, 0)
-            pins.digitalWritePin(DigitalPin.P13, 0)
-            if (motor_start) {
-                basic.pause(1000)
-                pins.analogWritePin(AnalogPin.P12, 0)
-                pins.analogWritePin(AnalogPin.P13, 300)
-                basic.pause(5000)
-            }
-            basic.pause(2000)
-        }
+        // if (motor_start) {
+        //     basic.pause(5000)
+        //     pins.digitalWritePin(DigitalPin.P12, 0)
+        //     pins.digitalWritePin(DigitalPin.P13, 0)
+        //     if (motor_start) {
+        //         basic.pause(1000)
+        //         pins.analogWritePin(AnalogPin.P12, 0)
+        //         pins.analogWritePin(AnalogPin.P13, 300)
+        //         basic.pause(5000)
+        //     }
+        //     basic.pause(2000)
+        // }
         // } else {
+
+        basic.pause(2000)
         if (motor) {
             pins.digitalWritePin(DigitalPin.P12, 0)
             pins.digitalWritePin(DigitalPin.P13, 0)
@@ -118,9 +122,10 @@ let solar_winkel = 0
 let strip: neopixel.Strip = null
 let licht = 0
 let num2 = 0
+let old_humidity=0
 basic.showIcon(IconNames.Yes)
 init()
-// serial.redirectToUSB()
+serial.redirectToUSB()
 
 
 basic.forever(function () {
